@@ -75,7 +75,7 @@
     </style>
 </head>
 <body>
-    <div class="center-text">
+    <div class="center-text" id="centerText">
         우리는<br>
         질서, 혼돈, 우연으로<br>
         호흡하는 유기체입니다.<br>
@@ -85,6 +85,49 @@
         </div>
     </div>
     <script>
+        let firstTouch = true;
+        let isAnimating = false;
+        const originalText = `우리는<br>
+        질서, 혼돈, 우연으로<br>
+        호흡하는 유기체입니다.<br>
+        나는 그 일부이자 전체입니다.
+        <div style="font-size: 16px; margin-top: 30px; opacity: 0.8;">
+            지문을 찍으면 공존 계약이 성립됩니다
+        </div>`;
+
+        // 텍스트 변경 함수
+        function changeText() {
+            if (firstTouch && !isAnimating) {
+                isAnimating = true;
+                const centerText = document.getElementById('centerText');
+                
+                // 2초 후에 페이드 아웃 시작
+                setTimeout(() => {
+                    centerText.style.transition = 'opacity 0.8s ease-out';
+                    centerText.style.opacity = '0';
+                    
+                    // 페이드 아웃 후 텍스트 변경
+                    setTimeout(() => {
+                        centerText.innerHTML = '당신의 리듬이 세계에 닿았습니다.';
+                        centerText.style.opacity = '1';
+                        
+                        // 5초 후 다시 원래 텍스트로
+                        setTimeout(() => {
+                            centerText.style.opacity = '0';
+                            
+                            setTimeout(() => {
+                                centerText.innerHTML = originalText;
+                                centerText.style.opacity = '1';
+                                firstTouch = true;
+                                isAnimating = false;
+                            }, 800);
+                        }, 5000);
+                    }, 800);
+                }, 2000);
+                
+                firstTouch = false;
+            }
+        }
         // SVG 지문 패턴 생성
         function createFingerprintSVG() {
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -160,6 +203,7 @@
         // 터치 이벤트 (모바일)
         document.body.addEventListener('touchstart', (e) => {
             e.preventDefault();
+            changeText();
             Array.from(e.touches).forEach(touch => {
                 createFingerprint(touch.clientX, touch.clientY);
             });
@@ -175,6 +219,7 @@
 
         // 마우스 클릭 이벤트 (데스크탑)
         document.body.addEventListener('click', (e) => {
+            changeText();
             createFingerprint(e.clientX, e.clientY);
         });
 
