@@ -81,7 +81,7 @@
         호흡하는 유기체입니다.<br>
         나는 그 일부이자 전체입니다.
         <div style="font-size: 16px; margin-top: 30px; opacity: 0.8;">
-            화면에 지문을 찍으면 공존 계약이 성립됩니다
+            화면에 지문을 찍으면<br>공존계약이 성립됩니다.
         </div>
     </div>
     <script>
@@ -92,8 +92,48 @@
         호흡하는 유기체입니다.<br>
         나는 그 일부이자 전체입니다.
         <div style="font-size: 16px; margin-top: 30px; opacity: 0.8;">
-            화면에 지문을 찍으면 공존 계약이 성립됩니다
+            화면에 지문을 찍으면<br>공존계약이 성립됩니다.
         </div>`;
+
+        // 오디오 컨텍스트 생성
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // 심장 소리 재생 함수
+        function playBeep() {
+            // 첫 번째 박동 (쿵)
+            const osc1 = audioContext.createOscillator();
+            const gain1 = audioContext.createGain();
+            
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(60, audioContext.currentTime);
+            osc1.frequency.exponentialRampToValueAtTime(40, audioContext.currentTime + 0.1);
+            
+            gain1.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gain1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            
+            osc1.connect(gain1);
+            gain1.connect(audioContext.destination);
+            
+            osc1.start(audioContext.currentTime);
+            osc1.stop(audioContext.currentTime + 0.15);
+            
+            // 두 번째 박동 (쿵) - 약간 뒤에
+            const osc2 = audioContext.createOscillator();
+            const gain2 = audioContext.createGain();
+            
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(65, audioContext.currentTime + 0.15);
+            osc2.frequency.exponentialRampToValueAtTime(45, audioContext.currentTime + 0.25);
+            
+            gain2.gain.setValueAtTime(0.25, audioContext.currentTime + 0.15);
+            gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            osc2.connect(gain2);
+            gain2.connect(audioContext.destination);
+            
+            osc2.start(audioContext.currentTime + 0.15);
+            osc2.stop(audioContext.currentTime + 0.3);
+        }
 
         // 텍스트 변경 함수
         function changeText() {
@@ -203,6 +243,7 @@
         // 터치 이벤트 (모바일)
         document.body.addEventListener('touchstart', (e) => {
             e.preventDefault();
+            playBeep();
             changeText();
             Array.from(e.touches).forEach(touch => {
                 createFingerprint(touch.clientX, touch.clientY);
@@ -219,6 +260,7 @@
 
         // 마우스 클릭 이벤트 (데스크탑)
         document.body.addEventListener('click', (e) => {
+            playBeep();
             changeText();
             createFingerprint(e.clientX, e.clientY);
         });
